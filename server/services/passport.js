@@ -8,6 +8,18 @@ passport.serializeUser((user, done) => {
 	done(null, user.user_id);
 });
 
+passport.deserializeUser(async (id, done) => {
+	try {
+		const user = await pool.query(
+			"SELECT * FROM users WHERE user_id = $1",
+			[id]
+		);
+		done(null, user.rows[0]);
+	} catch (error) {
+		console.error(`Deserialize error: ${error.message}`);
+	}
+});
+
 passport.use(
 	new GoogleStrategy(
 		{
@@ -16,25 +28,25 @@ passport.use(
 			callbackURL: "/auth/google/callback",
 		},
 		async (accessToken, refreshToken, profile, done) => {
-			console.log(`Profile ID: ${profile.id}`);
-
-			const user = await pool.query(
-				"SELECT * FROM users WHERE google_id = $1",
-				[profile.id]
-			);
-
-			if (user.rows.length > 0) {
-				console.log("User exists");
-				done(null, user);
-			} else {
-				let newUser = await pool.query(
-					"INSERT INTO users (google_id) VALUES ($1) RETURNING *",
+			try {
+				const user = await pool.query(
+					"SELECT * FROM users WHERE google_id = $1",
 					[profile.id]
 				);
 
-				console.log("New User");
-				console.log(newUser.rows[0]);
-				done(null, newUser);
+				if (user.rows.length > 0) {
+					console.log("User exists");
+					done(null, user);
+				} else {
+					let newUser = await pool.query(
+						"INSERT INTO users (google_id) VALUES ($1) RETURNING *",
+						[profile.id]
+					);
+
+					done(null, newUser.rows[0]);
+				}
+			} catch (err) {
+				console.error(`Error in GoogleStrategy: ${err.message}`);
 			}
 		}
 	)
