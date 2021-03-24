@@ -36,7 +36,7 @@ passport.use(
 
 				if (user.rows.length > 0) {
 					console.log("User exists");
-					done(null, user);
+					done(null, user.rows[0]);
 				} else {
 					let newUser = await pool.query(
 						"INSERT INTO users (google_id) VALUES ($1) RETURNING *",
