@@ -39,8 +39,8 @@ passport.use(
 					done(null, user.rows[0]);
 				} else {
 					let newUser = await pool.query(
-						"INSERT INTO users (google_id) VALUES ($1) RETURNING *",
-						[profile.id]
+						"INSERT INTO users (google_id, credits) VALUES ($1, $2) RETURNING *",
+						[profile.id, 0]
 					);
 
 					done(null, newUser.rows[0]);
