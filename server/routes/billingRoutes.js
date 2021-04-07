@@ -12,8 +12,6 @@ module.exports = (app) => {
 			source: req.body.id,
 		});
 
-		console.log(charge);
-
 		if (charge.status != "succeeded") {
 			return res.status(422).send({ error: "Payment failed" });
 		}

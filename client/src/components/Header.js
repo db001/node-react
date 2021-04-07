@@ -19,6 +19,9 @@ class Header extends Component {
 					<li key="head1">
 						<Payments />
 					</li>,
+					<li key="head3" style={{ margin: "0 10px" }}>
+						Credits: {this.props.auth.credits}
+					</li>,
 					<li key="head2">
 						<a href="/api/logout">Logout</a>
 					</li>,
@@ -27,6 +30,7 @@ class Header extends Component {
 	}
 
 	render() {
+		console.log(this.props.auth);
 		return (
 			<nav>
 				<div className="nav-wrapper">
